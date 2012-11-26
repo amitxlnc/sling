@@ -201,7 +201,15 @@ public class TenantProviderImpl implements TenantProvider {
         // in case of some problem return an empty iterator
         return Collections.<Tenant> emptyList().iterator();
     }
-
+    
+    /**
+     * Creates a new tenant (not exposed as part of the api)
+     * @param name 
+     * @param tenantId
+     * @param description
+     * @return
+     * @throws PersistenceException
+     */
     public Tenant addTenant(String name, String tenantId, String description) throws PersistenceException {
         final ResourceResolver adminResolver = getAdminResolver();
         if (adminResolver != null) {
@@ -237,6 +245,10 @@ public class TenantProviderImpl implements TenantProvider {
                             tenantProps.putAll(props);
                         }
                     }
+                    //save the properties
+                    tenantProps.save();
+                    
+                    //save the session
                     adminSession.save();
                     //refersh tenant instance, as it copies property from resource
                     tenant = new TenantImpl(resource);
@@ -252,6 +264,12 @@ public class TenantProviderImpl implements TenantProvider {
         throw new PersistenceException("Cannot create the tenant");
     }
     
+    /**
+     * Removes the tenant (not exposed as part of the api)
+     * @param tenantId tenant identifier
+     * @return
+     * @throws PersistenceException
+     */
     public void removeTenant(String tenantId) throws PersistenceException {
         final ResourceResolver adminResolver = getAdminResolver();
         if (adminResolver != null) {
